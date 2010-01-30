@@ -127,3 +127,23 @@ get '/trip/:id' do
     @trip = Trip.get(params[:id].to_i)
     erb :trip
 end
+
+get '/nuke' do
+    count = 0
+    things = User.all
+    count += things.size
+    things.each { |t|
+        t.destroy
+    }
+    things = Gig.all
+    count += things.size
+    things.each { |t|
+        t.destroy
+    }
+    things = Trip.all
+    count += things.size
+    things.each { |t|
+        t.destroy
+    }
+    "#{count} things destroyed."
+end
