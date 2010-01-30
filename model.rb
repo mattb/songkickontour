@@ -1,9 +1,3 @@
-require 'dm-core'
-require 'dopplr'
-require 'json'
-
-require 'appengine-apis/urlfetch'
-
 class User
     include DataMapper::Resource
 
