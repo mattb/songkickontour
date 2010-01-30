@@ -67,17 +67,26 @@ get '/user/:nick' do
         redirect "/songkick/#{params[:nick]}"
         return
     end
-    DOPPLR.token = @user.dopplr_token
-    trips = JSON.parse(DOPPLR.get("https://www.dopplr.com/api/future_trips_info.js").body)['trip']
-    @user.trips.clear
-    trips.each { |data|
-        trip = @user.trips.create(:dopplr_id => data["id"])
-        trip.city = data['city']['name']
-        trip.lat = data['city']['latitude']
-        trip.lng = data['city']['longitude']
-        trip.start = DateTime.parse(data['start'])
-        trip.finish = DateTime.parse(data['finish'])
-        trip.save
+    if @user.trips_checked_at.nil? or ((@user.trips_checked_at + 1) < DateTime.now)
+        DOPPLR.token = @user.dopplr_token
+        logger.warn "Getting trip data from Dopplr."
+        trips = JSON.parse(DOPPLR.get("https://www.dopplr.com/api/future_trips_info.js").body)['trip']
+        @user.trips.each { |trip|
+            trip.destroy
+        }
+        trips.each { |data|
+            trip = @user.trips.create(:dopplr_id => data["id"])
+            trip.city = data['city']['name']
+            trip.lat = data['city']['latitude']
+            trip.lng = data['city']['longitude']
+            trip.start = DateTime.parse(data['start'])
+            trip.finish = DateTime.parse(data['finish'])
+            trip.save
+        }
+        @user.trips_checked_at = DateTime.now
+        @user.save
+    end
+    @user.trips.each { |trip|
         AppEngine::Labs::TaskQueue.add(:url => "/update_trip/#{trip.id}", :method => "GET")
     }
     erb :user

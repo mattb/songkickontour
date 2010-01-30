@@ -5,6 +5,7 @@ class User
     property :name, String
     property :dopplr_token, String
     property :songkick_name, String
+    property :trips_checked_at, DateTime
 
     has n, :trips
 end
