@@ -1,0 +1,10 @@
+<html>
+    <body>
+        <h1>Trips for <%= @user.name %></h1>
+        <ul>
+        <% for trip in @user.trips(:order => [:start.asc]) %>
+            <li>A trip to <%= trip.city %> from <%= trip.start %> to <%= trip.finish %>. <a href="/trip/<%= trip.id %>">gigs</a></li>
+        <% end %>
+        </ul>
+    </body>
+</html>

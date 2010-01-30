@@ -23,7 +23,7 @@ class Trip
     belongs_to :user
     has n, :gigs
 
-    def check_gigs!
+    def gig_url
         lat = self.lat
         lng = self.lng
         start = self.start.to_time.strftime("%Y-%m-%d")

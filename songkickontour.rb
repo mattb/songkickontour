@@ -48,6 +48,25 @@ get '/auth' do
 end
 
 get '/user/:nick' do
-    user = User.first(:name => params[:nick])
-    user.dopplr_token
+    @user = User.first(:name => params[:nick])
+    DOPPLR.token = @user.dopplr_token
+    trips = JSON.parse(DOPPLR.get("https://www.dopplr.com/api/future_trips_info.js").body)['trip']
+    @user.trips.clear
+    trips.each { |data|
+        trip = @user.trips.create(:dopplr_id => data["id"])
+        trip.city = data['city']['name']
+        trip.lat = data['city']['latitude']
+        trip.lng = data['city']['longitude']
+        trip.start = DateTime.parse(data['start'])
+        trip.finish = DateTime.parse(data['finish'])
+        trip.save
+    }
+    erb :user
+end
+
+get '/trip/:id' do
+    @trip = Trip.get(params[:id].to_i)
+    b=AppEngine::URLFetch.fetch(@trip.gig_url).body
+    @gigs=JSON.parse(b)['resultsPage']['results']['event']
+    erb :trip
 end
