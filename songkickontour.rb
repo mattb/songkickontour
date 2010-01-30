@@ -19,6 +19,7 @@ BASE_URL = "http://songkickontour.appspot.com/auth"
 DOPPLR = Dopplr.new(:next_url => BASE_URL, :session => true)
 
 get '/' do
+    response['Expires'] = (Time.now + 60).httpdate
     erb :index
 end
 

@@ -6,6 +6,5 @@ bundle_path ".gems/bundler_gems"
 # List gems to bundle here:
 gem "dm-appengine"
 gem "sinatra"
-gem "rack-cache"
 gem "appengine-rack"
 gem "json"
