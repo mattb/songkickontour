@@ -1,6 +1,7 @@
 require 'appengine-rack'
 AppEngine::Rack.configure_app(          
-    :application => "songkick-on-tour",           
-    :precompilation_enabled => true,
+    :application => "songkickontour",           
+    #:precompilation_enabled => true,
     :version => "1")
-run lambda { Rack::Response.new("Hello").finish }
+require 'songkickontour'
+run Sinatra::Application
