@@ -3,7 +3,7 @@ Songkick On Tour
 
 This app was written at Music Hackday Stockholm. It consults your Dopplr account for your list of future trips. It uses these to check Songkick for gigs in the places you plan to visit.
 
-Written using Sinatra + JRuby to be run on Google Appengine. The live site is at http://songkickontour.appspot.com
+Written using Sinatra + JRuby to be run on Google Appengine. The live site is at (http://songkickontour.appspot.com)
 
 NOTES
 =====
