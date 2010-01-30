@@ -4,6 +4,7 @@ class User
     property :id, Serial
     property :name, String
     property :dopplr_token, String
+    property :songkick_name, String
 
     has n, :trips
 end
@@ -28,6 +29,7 @@ class Trip
         lng = self.lng
         start = self.start.to_time.strftime("%Y-%m-%d")
         finish = self.finish.to_time.strftime("%Y-%m-%d")
+        url = "http://api.songkick.com/api/3.0/events.json?apikey=musichackdaystockholm&type=concert&location=geo:#{lat},#{lng}&min_date=#{start}&max_date=#{finish}&relevant_to=#{self.user.songkick_name}"
         url = "http://api.songkick.com/api/3.0/events.json?apikey=musichackdaystockholm&type=concert&location=geo:#{lat},#{lng}&min_date=#{start}&max_date=#{finish}"
         return url
     end

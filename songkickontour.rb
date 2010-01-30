@@ -1,4 +1,6 @@
 require 'appengine-apis/urlfetch'
+require 'appengine-apis/logger'
+require 'appengine-apis/labs/taskqueue'
 require 'sinatra'
 require 'dm-core'
 require 'json'
@@ -7,6 +9,7 @@ require 'dopplr'
 
 # Configure DataMapper to use the App Engine datastore 
 DataMapper.setup(:default, "appengine://auto")
+logger = AppEngine::Logger.new
 
 # Make sure our template can use <%=h
 helpers do
@@ -48,8 +51,22 @@ get '/auth' do
     newtoken
 end
 
+get '/songkick/:nick' do
+    erb :songkick
+end
+
+post '/songkick/:nick' do
+    @user = User.first(:name => params[:nick])
+    @user.update(:songkick_name => params[:songkick])
+    redirect "/user/#{params[:nick]}"
+end
+
 get '/user/:nick' do
     @user = User.first(:name => params[:nick])
+    if !@user.songkick_name
+        redirect "/songkick/#{params[:nick]}"
+        return
+    end
     DOPPLR.token = @user.dopplr_token
     trips = JSON.parse(DOPPLR.get("https://www.dopplr.com/api/future_trips_info.js").body)['trip']
     @user.trips.clear
@@ -61,13 +78,30 @@ get '/user/:nick' do
         trip.start = DateTime.parse(data['start'])
         trip.finish = DateTime.parse(data['finish'])
         trip.save
+        AppEngine::Labs::TaskQueue.add(:url => "/update_trip/#{trip.id}", :method => "GET")
     }
     erb :user
 end
 
+get '/update_trip/:id' do
+    logger.error "Updating gigs for trip #{params[:id]}"
+    trip = Trip.get(params[:id].to_i)
+    logger.info trip.gig_url
+    b=AppEngine::URLFetch.fetch(trip.gig_url).body
+    gigs=JSON.parse(b)['resultsPage']['results']
+    if gigs.has_key?("events")
+        gigs = gigs["events"]
+    else
+        gigs = []
+    end
+    gigs.each { |data|
+        gig = Gig.find_or_create_from_songkick(data)
+        gig.update(:trip => trip)
+        logger.warn "Found gig: " + gig.name
+    }
+    "OK"
+end
+
 get '/trip/:id' do
-    @trip = Trip.get(params[:id].to_i)
-    b=AppEngine::URLFetch.fetch(@trip.gig_url).body
-    @gigs=JSON.parse(b)['resultsPage']['results']['event']
     erb :trip
 end
