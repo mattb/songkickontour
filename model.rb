@@ -1,5 +1,6 @@
 require 'dm-core'
 require 'dopplr'
+require 'json'
 
 require 'appengine-apis/urlfetch'
 
@@ -44,4 +45,16 @@ class Gig
     belongs_to :trip
     property :id, Serial
     property :name, String
+    property :url, String
+    property :start, DateTime, :index => true
+    property :songkick_id, Integer, :index => true
+
+    def Gig.find_or_create_from_songkick(data)
+        gig = Gig.first(:songkick_id => data['id'])
+        if gig
+            return gig.update(:url => data['uri'], :start => DateTime.parse(data['start']['date'] + "T" + data['start']['time']), :name => data['displayName'])
+        else
+            return Gig.create(:url => data['uri'], :start => DateTime.parse(data['start']['date'] + "T" + data['start']['time']), :name => data['displayName'], :songkick_id => data['id'])
+        end
+    end
 end
