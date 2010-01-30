@@ -1,7 +1,7 @@
 <h1>Trips for <%= @user.name %></h1>
 <ul>
     <% for trip in @user.trips(:order => [:start.asc]) %>
-        <li>A trip to <%= trip.city %> from <%= trip.start %> to <%= trip.finish %>. <div class="gig" data-trip="/trip_ready/<%= trip.id %>?min=<%= DateTime.now.to_s %>" style="display:none"><a href="/trip/<%= trip.id %>">gigs</a></a></li>
+        <li>A trip to <%= trip.city %> from <%= trip.start %> to <%= trip.finish %>. <div class="gig" data-trip="/trip_ready/<%= trip.id %>?min=<%= DateTime.now.to_s %>" style="display:none"><a href="/trip/<%= trip.id %>">gigs</a></div></li>
     <% end %>
 </ul>
 <script type="text/javascript">
@@ -14,6 +14,8 @@ url: u,
 success: function(response, status) {
     console.log("Success for " + $(gig).attr("data-trip"));
     $(gig).show();
+    console.log(response);
+    $(gig).find("a").prepend(response + " ");
 },
 error: function(xhr, status) {
     retry();

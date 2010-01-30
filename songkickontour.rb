@@ -90,7 +90,7 @@ get '/trip_ready/:id' do
             status 417
         end
     end
-    trip.gigs_checked_at.to_s
+    trip.gigs.count.to_s
 end
 
 get '/update_trip/:id' do
