@@ -46,11 +46,13 @@ class Gig
     property :songkick_id, Integer, :index => true
 
     def Gig.find_or_create_from_songkick(data)
+        start = DateTime.parse("#{data['start']['date']}T#{data['start']['time']}")
         gig = Gig.first(:songkick_id => data['id'])
         if gig
-            return gig.update(:url => data['uri'], :start => DateTime.parse(data['start']['date'] + "T" + data['start']['time']), :name => data['displayName'])
+            gig.update(:url => data['uri'], :start => start, :name => data['displayName'])
+            return gig
         else
-            return Gig.create(:url => data['uri'], :start => DateTime.parse(data['start']['date'] + "T" + data['start']['time']), :name => data['displayName'], :songkick_id => data['id'])
+            return Gig.create(:url => data['uri'], :start => start, :name => data['displayName'], :songkick_id => data['id'].to_i)
         end
     end
 end

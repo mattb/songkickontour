@@ -83,25 +83,38 @@ get '/user/:nick' do
     erb :user
 end
 
+get '/trip_ready/:id' do
+    trip = Trip.get(params[:id].to_i)
+    if params[:min]
+        if trip.gigs_checked_at.nil? or trip.gigs_checked_at < DateTime.parse(params[:min])
+            status 417
+        end
+    end
+    trip.gigs_checked_at.to_s
+end
+
 get '/update_trip/:id' do
     logger.error "Updating gigs for trip #{params[:id]}"
     trip = Trip.get(params[:id].to_i)
     logger.info trip.gig_url
     b=AppEngine::URLFetch.fetch(trip.gig_url).body
     gigs=JSON.parse(b)['resultsPage']['results']
-    if gigs.has_key?("events")
-        gigs = gigs["events"]
+    if gigs.has_key?("event")
+        gigs = gigs["event"]
     else
         gigs = []
     end
-    gigs.each { |data|
+    result = gigs.map { |data|
         gig = Gig.find_or_create_from_songkick(data)
         gig.update(:trip => trip)
         logger.warn "Found gig: " + gig.name
+        gig
     }
-    "OK"
+    trip.update(:gigs_checked_at => DateTime.now)
+    result.map { |g| g.name }.join(", ")
 end
 
 get '/trip/:id' do
+    @trip = Trip.get(params[:id].to_i)
     erb :trip
 end
