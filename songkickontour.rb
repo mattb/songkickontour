@@ -1,9 +1,8 @@
+require 'appengine-apis/urlfetch'
 require 'sinatra'
 require 'dm-core'
 require 'json'
 require 'model'
-require 'appengine-apis/urlfetch'
-Net::HTTP = AppEngine::URLFetch::HTTP
 require 'dopplr'
 
 # Configure DataMapper to use the App Engine datastore 
