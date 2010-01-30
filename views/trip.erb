@@ -1,10 +1,6 @@
-<html>
-    <body>
-        <h1>Gigs in <%= @trip.city %> between <%= @trip.start %> and <%= @trip.finish %></h1>
-        <ul>
-        <% for gig in @gigs %>
-            <li><a href="<%= gig['uri'] %>"><%= h gig['displayName']%></a></li>
-        <% end %>
-        </ul>
-    </body>
-</html>
+<h1>Gigs in <%= @trip.city %> between <%= @trip.start %> and <%= @trip.finish %></h1>
+<ul>
+    <% for gig in @gigs %>
+        <li><a href="<%= gig['uri'] %>"><%= h gig['displayName']%></a></li>
+    <% end %>
+</ul>
