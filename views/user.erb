@@ -7,7 +7,7 @@
 <script type="text/javascript">
     $(function() {
             $('.thelink').hide();
-            $("span.gig").each(function(idx, gig) {
+            $(".gig").each(function(idx, gig) {
                 $.poll(function(retry) {
                     var u = $(gig).attr("data-trip");
                     $.ajax({
@@ -15,8 +15,19 @@ url: u,
 success: function(response, status) {
     console.log("Success for " + $(gig).attr("data-trip"));
     console.log(response);
-    $(gig).find("a").contents.replace(response + " ");
-    $(gig).find("span.gig-link").toggle();
+    var count = parseInt(response);
+    if(count == 0) {
+        result = "are no gigs.";
+    }
+    if(count == 1) {
+        result = "is just one gig.";
+    } 
+    if(count > 1) {
+        result = "are " + count + " gigs.";
+    }
+    result = "<span>There " + result + "</span>";
+    $(gig).find("a").contents().replaceWith(result);
+    $(gig).find(".gig-link").toggle();
 },
 error: function(xhr, status) {
     retry();

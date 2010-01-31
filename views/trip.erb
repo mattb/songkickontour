@@ -1,4 +1,4 @@
-<h1>Gigs in <%= @trip.city %> between <%= @trip.start %> and <%= @trip.finish %></h1>
+<h2>Gigs in <%= @trip.city %> between <%= display_date @trip.start %> and <%= display_date @trip.finish %></h1>
 <ul>
     <% for gig in @trip.gigs %>
         <li><a href="<%= gig.url %>"><%= h gig.name %></a></li>
