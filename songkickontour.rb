@@ -15,6 +15,10 @@ logger = AppEngine::Logger.new
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
+
+  def display_date(date)
+      date.strftime("%e %b %Y");
+  end
 end
 
 #BASE_URL = "http://localhost:8080/auth"

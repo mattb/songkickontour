@@ -1,11 +1,12 @@
-<h1>Trips for <%= @user.name %></h1>
+<h2><%= @user.name %> is going to...</h2>
 <ul>
     <% for trip in @user.trips(:order => [:start.asc]) %>
-        <li>A trip to <%= trip.city %> from <%= trip.start %> to <%= trip.finish %>. <div class="gig" data-trip="/trip_ready/<%= trip.id %>?min=<%= DateTime.now.to_s %>"><span class="gig-link" style="display:none"><a href="/trip/<%= trip.id %>">gigs</a></span><span class="gig-link"><img width="16" height="16" src="/spinner.gif" /></span></div></li>
+        <li><%= trip.city %> from <%= display_date trip.start %> to <%= display_date trip.finish %>. <span class="gig" data-trip="/trip_ready/<%= trip.id %>?min=<%= DateTime.now.to_s %>"><span class="gig-link thelink"><a href="/trip/<%= trip.id %>">gigs</a></span><span class="gig-link"><img width="16" height="16" valign="top" src="/spinner.gif" /></span></span></li>
     <% end %>
 </ul>
 <script type="text/javascript">
     $(function() {
+            $('.thelink').hide();
             $("div.gig").each(function(idx, gig) {
                 $.poll(function(retry) {
                     var u = $(gig).attr("data-trip");
@@ -14,7 +15,7 @@ url: u,
 success: function(response, status) {
     console.log("Success for " + $(gig).attr("data-trip"));
     console.log(response);
-    $(gig).find("a").prepend(response + " ");
+    $(gig).find("a").contents.replace(response + " ");
     $(gig).find("span.gig-link").toggle();
 },
 error: function(xhr, status) {
