@@ -7,7 +7,7 @@
 <script type="text/javascript">
     $(function() {
             $('.thelink').hide();
-            $("div.gig").each(function(idx, gig) {
+            $("span.gig").each(function(idx, gig) {
                 $.poll(function(retry) {
                     var u = $(gig).attr("data-trip");
                     $.ajax({
